@@ -24,13 +24,15 @@ const DELAY = 45
     ctx2.fillStyle = "#000000"
     ctx2.fillRect(0, 0, 100, 100)
     let time = 0
+    let blobsborn = 1
     let algae = []
     let blob = [
         {
             x: 30,
             y: 30,
-            e: 8,
-            d: 0,
+            e: 8, //energy
+            d: 0, //direction (radi)
+            m: 1.0, //metabolism
             age: 0
         }
     ]
@@ -55,7 +57,9 @@ const DELAY = 45
             let drawradius = Math.sqrt(b.e)
             ctx2.beginPath()
             ctx2.arc(b.x, b.y, drawradius, 0, Math.PI * 2);
-            ctx2.fillStyle = "#B000FF"
+            let red = Math.floor(400*b.m-300)
+            let blue = Math.floor(650-400*b.m)
+            ctx2.fillStyle = 'rgb(' + red + ', 0, ' + blue + ')'
             ctx2.fill();
             if (b.age > maxage) {
                 maxage = b.age
@@ -69,7 +73,7 @@ const DELAY = 45
 
         document.getElementById("energylabel").innerHTML = energytotal
         document.getElementById("algaelabel").innerHTML = algae.length
-        document.getElementById("bloblabel").innerHTML = blob.length
+        document.getElementById("bloblabel").innerHTML = blob.length + ' (' + blobsborn + ')'
         document.getElementById("maxagelabel").innerHTML = maxage
         document.getElementById("timelabel").innerHTML = time
     }
@@ -105,11 +109,11 @@ const DELAY = 45
         })
 
         blob.forEach(b => {
-            let dx = Math.cos(b.d)
-            let dy = Math.sin(b.d)
+            let dx = Math.cos(b.d) * b.m
+            let dy = Math.sin(b.d) * b.m
             b.x += dx
             b.y += dy
-            b.e -= 0.015
+            b.e -= 0.015 * b.m
             b.age++
             let change = -1 
 
@@ -147,13 +151,24 @@ const DELAY = 45
         blob.forEach(b => {
             if (b.e > 20) {
                 b.e = 10
+                let mdiff = Math.random()
+                if (mdiff < 0.5) {
+                    mdiff = 0
+                } else if (mdiff < 0.75) {
+                    mdiff = 0.1
+                } else {
+                    mdiff = -0.1
+                }
+                
                 newblobs.push(
                 {
                     x:b.x,
                     y:b.y,
                     e:5,
-                    d:b.d+Math.PI
+                    d:b.d+Math.PI,
+                    m:b.m + mdiff
                 })
+                blobsborn++
             }
         })
         newblobs.forEach(nb => {
