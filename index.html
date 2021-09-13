@@ -3,6 +3,8 @@
 <label>Algae:</label><label id="algaelabel"></label><br>
 <label>Blobs:</label><label id="bloblabel"></label><br>
 <label>Energy:</label><label id="energylabel"></label><br>
+<label>Max age:</label><label id="maxagelabel"></label><br>
+<label>Time:</label><label id="timelabel"></label><br>
 <script>
 
 const DELAY = 45
@@ -21,14 +23,15 @@ const DELAY = 45
     var ctx2 = canvas2.getContext('2d');
     ctx2.fillStyle = "#000000"
     ctx2.fillRect(0, 0, 100, 100)
-
+    let time = 0
     let algae = []
     let blob = [
         {
             x: 30,
             y: 30,
             e: 8,
-            d: 0
+            d: 0,
+            age: 0
         }
     ]
 
@@ -46,6 +49,7 @@ const DELAY = 45
             ctx2.putImageData( im, a[0], a[1] );  
         })
         let energytotal = 0
+        let maxage = 0
         blob.forEach(b => {
             energytotal += b.e
             let drawradius = Math.sqrt(b.e)
@@ -53,16 +57,21 @@ const DELAY = 45
             ctx2.arc(b.x, b.y, drawradius, 0, Math.PI * 2);
             ctx2.fillStyle = "#B000FF"
             ctx2.fill();
+            if (b.age > maxage) {
+                maxage = b.age
+            }
         })
         if (blob.length > 2) {
             energytotal = Math.floor(energytotal)
         } else {
             energytotal =  energytotal.toFixed(3)
         }
+
         document.getElementById("energylabel").innerHTML = energytotal
         document.getElementById("algaelabel").innerHTML = algae.length
         document.getElementById("bloblabel").innerHTML = blob.length
-        
+        document.getElementById("maxagelabel").innerHTML = maxage
+        document.getElementById("timelabel").innerHTML = time
     }
 
     function dist(b, a) {
@@ -101,7 +110,7 @@ const DELAY = 45
             b.x += dx
             b.y += dy
             b.e -= 0.015
-
+            b.age++
             let change = -1 
 
             if (b.x < 2) { change = b.x = 3}
@@ -170,6 +179,7 @@ const DELAY = 45
 
     async function start() {
         while(true) {
+            time++
             await hej()
         }
     }
