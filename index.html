@@ -19,6 +19,13 @@
     ctx2.fillRect(0, 0, 100, 100)
 
     let algae = []
+    let blob = [
+        {
+            x: 30,
+            y: 30,
+            e: 5
+        }
+    ]
 
     var im = ctx2.createImageData(1,1); // only do this once per page
     var d  = im.data;                        // only do this once per page
@@ -27,9 +34,15 @@
     d[2]   = 0;
     d[3]   = 250;
     async function render() {
+        ctx2.fillStyle = "#000000"
         ctx2.fillRect(0, 0, 100, 100)
         algae.forEach(a => {
             ctx2.putImageData( im, a[0], a[1] );  
+        })
+        blob.forEach(b => {
+            ctx2.arc(b.x, b.y, b.e, 0, Math.PI * 2);
+            ctx2.fillStyle = "#B000FF"
+            ctx2.fill();
         })
     }
 
@@ -67,9 +80,10 @@
             algae.push(newalg)
         }
         
-       console.log(algae)
         await move()
         await render()
+
+        
         
     }
 
