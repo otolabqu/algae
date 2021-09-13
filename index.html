@@ -2,7 +2,7 @@
 
 <script>
 
-const DELAY = 300
+const DELAY = 45
     function randInt(min, max) {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
@@ -79,7 +79,6 @@ const DELAY = 300
                 a[1] = Math.min(99, a[1]+1)
                 return
             }
-            
         })
 
         blob.forEach(b => {
@@ -98,7 +97,6 @@ const DELAY = 300
             if (change > 0) {
                 b.d = Math.random() * 2 * Math.PI
             }
-            
         })
     }
 
@@ -109,7 +107,7 @@ const DELAY = 300
                     b.e++
                     a[0] = -50  //temp move outside of world, cleanup later
                     a[1] = -50
-                    console.log("blob ate algae")
+                    //console.log("blob ate algae")
                 }
             })
         })
@@ -130,7 +128,6 @@ const DELAY = 300
                     y:b.y,
                     e:5,
                     d:b.d+Math.PI
-
                 })
             }
         })
@@ -140,34 +137,25 @@ const DELAY = 300
     }
     async function hej() {
         await sleep(DELAY)
-        console.clear()
+        //console.clear()
         if (algae.length < 50) {
             let xstart = randInt(0, 99)
             let ystart = randInt(0, 99)
             let newalg = [xstart, ystart]
             algae.push(newalg)
         }
-        
         await move()
-        
         await eat()
         await cleanup()
         await breed()
         await render()
-        console.log(JSON.stringify(blob))
-
-        
-        
+        //console.log(JSON.stringify(blob))
     }
 
     async function start() {
         while(true) {
-            
             await hej()
-            
         }
     }
-    
     start()
-
 </script>
