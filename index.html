@@ -1,5 +1,8 @@
 <canvas id="canvas2" width="100" height="100" style="image-rendering: pixelated;"></canvas>
-
+<br>
+<label>Algae:</label><label id="algaelabel"></label><br>
+<label>Blobs:</label><label id="bloblabel"></label><br>
+<label>Energy:</label><label id="energylabel"></label><br>
 <script>
 
 const DELAY = 45
@@ -24,7 +27,7 @@ const DELAY = 45
         {
             x: 30,
             y: 30,
-            e: 5,
+            e: 8,
             d: 0
         }
     ]
@@ -42,13 +45,24 @@ const DELAY = 45
         algae.forEach(a => {
             ctx2.putImageData( im, a[0], a[1] );  
         })
+        let energytotal = 0
         blob.forEach(b => {
+            energytotal += b.e
             let drawradius = Math.sqrt(b.e)
             ctx2.beginPath()
             ctx2.arc(b.x, b.y, drawradius, 0, Math.PI * 2);
             ctx2.fillStyle = "#B000FF"
             ctx2.fill();
         })
+        if (blob.length > 2) {
+            energytotal = Math.floor(energytotal)
+        } else {
+            energytotal =  energytotal.toFixed(3)
+        }
+        document.getElementById("energylabel").innerHTML = energytotal
+        document.getElementById("algaelabel").innerHTML = algae.length
+        document.getElementById("bloblabel").innerHTML = blob.length
+        
     }
 
     function dist(b, a) {
@@ -86,7 +100,7 @@ const DELAY = 45
             let dy = Math.sin(b.d)
             b.x += dx
             b.y += dy
-            b.e -= 0.003
+            b.e -= 0.012
 
             let change = -1 
 
@@ -116,6 +130,7 @@ const DELAY = 45
 
     async function cleanup() {
         algae = algae.filter(a => a[0] != -50)
+        blob = blob.filter(b => b.e > 1.5)
     }
 
     async function breed() {
