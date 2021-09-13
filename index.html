@@ -82,6 +82,9 @@ const DELAY = 300
         })
 
         blob.forEach(b => {
+            if (Math.random() < 0.25) {
+                b.d += 0.1*Math.PI
+            }
             let dx = Math.cos(b.d)
             let dy = Math.sin(b.d)
             b.x += dx
@@ -124,6 +127,8 @@ const DELAY = 300
         await eat()
         await cleanup()
         await render()
+
+        
         
     }
 
