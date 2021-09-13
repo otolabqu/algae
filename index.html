@@ -15,7 +15,6 @@
     }
     var canvas2 = document.getElementById('canvas2');
     var ctx2 = canvas2.getContext('2d');
-    let DELTA = 13
     ctx2.fillStyle = "#000000"
     ctx2.fillRect(0, 0, 100, 100)
 
@@ -33,6 +32,32 @@
             ctx2.putImageData( im, a[0], a[1] );  
         })
     }
+
+    async function move() {
+        algae.forEach(a => {
+            let r = Math.random()
+            if (r < 0.5) {
+                return
+            }
+            if (r < 0.625) { //move left
+                a[0] = Math.max(0, a[0]-1)
+                return
+            }
+            if (r < 0.75) { //move right
+                a[0] = Math.min(99, a[0]+1)
+                return
+            }
+            if (r < 0.875) { //move up
+                a[1] = Math.max(0, a[1]-1)
+                return
+            }
+            if (r < 0.99) { //move down
+                a[1] = Math.min(99, a[1]+1)
+                return
+            }
+            
+        })
+    }
     async function hej() {
         await sleep(1000)
         if (algae.length < 50) {
@@ -43,8 +68,8 @@
         }
         
        console.log(algae)
-
-       render()
+        await move()
+        await render()
         
     }
 
