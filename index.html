@@ -2,6 +2,7 @@
 
 <script>
 
+const DELAY = 300
     function randInt(min, max) {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
@@ -23,7 +24,8 @@
         {
             x: 30,
             y: 30,
-            e: 5
+            e: 5,
+            d: 0
         }
     ]
 
@@ -34,18 +36,26 @@
     d[2]   = 0;
     d[3]   = 250;
     async function render() {
+        ctx2.clearRect(0,0,100,100)
         ctx2.fillStyle = "#000000"
         ctx2.fillRect(0, 0, 100, 100)
         algae.forEach(a => {
             ctx2.putImageData( im, a[0], a[1] );  
         })
         blob.forEach(b => {
+            ctx2.beginPath()
             ctx2.arc(b.x, b.y, b.e, 0, Math.PI * 2);
             ctx2.fillStyle = "#B000FF"
             ctx2.fill();
         })
     }
 
+    function dist(b, a) {
+        let dx = b.x - a[0]
+        let dy = b.y - a[1]
+        let c2 = dx*dx + dy*dy
+        return Math.sqrt(c2)
+    }
     async function move() {
         algae.forEach(a => {
             let r = Math.random()
@@ -70,9 +80,38 @@
             }
             
         })
+
+        blob.forEach(b => {
+            let dx = Math.cos(b.d)
+            let dy = Math.sin(b.d)
+            b.x += dx
+            b.y += dy
+            b.x = Math.max(0, b.x)
+            b.x = Math.min(99, b.x)
+            b.y = Math.max(0, b.y)
+            b.y = Math.min(99, b.y)
+        })
     }
+
+    async function eat() {
+        blob.forEach(b => {
+            algae.forEach(a => {
+                if (dist(b, a) < b.e) {
+                    b.e++
+                    a[0] = -50  //temp move outside of world, cleanup later
+                    a[1] = -50
+                    console.log("blob ate algae")
+                }
+            })
+        })
+    }
+
+    async function cleanup() {
+        algae = algae.filter(a => a[0] != -50)
+    }
+
     async function hej() {
-        await sleep(1000)
+        await sleep(DELAY)
         if (algae.length < 50) {
             let xstart = randInt(0, 99)
             let ystart = randInt(0, 99)
@@ -81,9 +120,10 @@
         }
         
         await move()
-        await render()
-
         
+        await eat()
+        await cleanup()
+        await render()
         
     }
 
