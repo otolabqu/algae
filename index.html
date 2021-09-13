@@ -43,8 +43,9 @@ const DELAY = 300
             ctx2.putImageData( im, a[0], a[1] );  
         })
         blob.forEach(b => {
+            let drawradius = Math.sqrt(b.e)
             ctx2.beginPath()
-            ctx2.arc(b.x, b.y, b.e, 0, Math.PI * 2);
+            ctx2.arc(b.x, b.y, drawradius, 0, Math.PI * 2);
             ctx2.fillStyle = "#B000FF"
             ctx2.fill();
         })
@@ -82,24 +83,29 @@ const DELAY = 300
         })
 
         blob.forEach(b => {
-            if (Math.random() < 0.25) {
-                b.d += 0.1*Math.PI
-            }
             let dx = Math.cos(b.d)
             let dy = Math.sin(b.d)
             b.x += dx
             b.y += dy
-            b.x = Math.max(0, b.x)
-            b.x = Math.min(99, b.x)
-            b.y = Math.max(0, b.y)
-            b.y = Math.min(99, b.y)
+            
+            let change = -1 
+
+            if (b.x < 2) { change = b.x = 3}
+            if (b.y < 2) { change = b.y = 3}
+            if (b.x > 98) { change = b.x = 97}
+            if (b.y > 98) { change = b.y = 97}
+
+            if (change > 0) {
+                b.d = Math.random() * 2 * Math.PI
+            }
+            
         })
     }
 
     async function eat() {
         blob.forEach(b => {
             algae.forEach(a => {
-                if (dist(b, a) < b.e) {
+                if (dist(b, a) < Math.sqrt(b.e)) {
                     b.e++
                     a[0] = -50  //temp move outside of world, cleanup later
                     a[1] = -50
@@ -113,8 +119,28 @@ const DELAY = 300
         algae = algae.filter(a => a[0] != -50)
     }
 
+    async function breed() {
+        let newblobs = []
+        blob.forEach(b => {
+            if (b.e > 20) {
+                b.e = 10
+                newblobs.push(
+                {
+                    x:b.x,
+                    y:b.y,
+                    e:5,
+                    d:b.d+Math.PI
+
+                })
+            }
+        })
+        newblobs.forEach(nb => {
+            blob.push(nb)
+        })
+    }
     async function hej() {
         await sleep(DELAY)
+        console.clear()
         if (algae.length < 50) {
             let xstart = randInt(0, 99)
             let ystart = randInt(0, 99)
@@ -126,7 +152,9 @@ const DELAY = 300
         
         await eat()
         await cleanup()
+        await breed()
         await render()
+        console.log(JSON.stringify(blob))
 
         
         
