@@ -3,11 +3,19 @@
 <label>Algae:</label><label id="algaelabel"></label><br>
 <label>Blobs:</label><label id="bloblabel"></label><br>
 <label>Energy:</label><label id="energylabel"></label><br>
+<label>Avg metabolism:</label><label id="metalabel"></label><br>
 <label>Max age:</label><label id="maxagelabel"></label><br>
 <label>Time:</label><label id="timelabel"></label><br>
+
+<button onclick="pause()">Pause</button>
 <script>
 
-const DELAY = 45
+const DELAY = 1
+let paused = false
+
+    function pause() {
+        paused = !paused
+    }
     function randInt(min, max) {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
@@ -30,9 +38,9 @@ const DELAY = 45
         {
             x: 30,
             y: 30,
-            e: 8, //energy
+            e: 15, //energy
             d: 0, //direction (radi)
-            m: 1.0, //metabolism
+            m: 0.7, //metabolism
             age: 0
         }
     ]
@@ -51,14 +59,16 @@ const DELAY = 45
             ctx2.putImageData( im, a[0], a[1] );  
         })
         let energytotal = 0
+        let metatotal = 0
         let maxage = 0
         blob.forEach(b => {
             energytotal += b.e
+            metatotal += b.m
             let drawradius = Math.sqrt(b.e)
             ctx2.beginPath()
             ctx2.arc(b.x, b.y, drawradius, 0, Math.PI * 2);
-            let red = Math.floor(400*b.m-300)
-            let blue = Math.floor(650-400*b.m)
+            let red = Math.floor(140*b.m)
+            let blue = Math.floor(250-250*b.m)
             ctx2.fillStyle = 'rgb(' + red + ', 0, ' + blue + ')'
             ctx2.fill();
             if (b.age > maxage) {
@@ -76,6 +86,9 @@ const DELAY = 45
         document.getElementById("bloblabel").innerHTML = blob.length + ' (' + blobsborn + ')'
         document.getElementById("maxagelabel").innerHTML = maxage
         document.getElementById("timelabel").innerHTML = time
+        let metaavg = metatotal / blob.length
+        document.getElementById("metalabel").innerHTML = metaavg.toFixed(2)
+        
     }
 
     function dist(b, a) {
@@ -113,7 +126,7 @@ const DELAY = 45
             let dy = Math.sin(b.d) * b.m
             b.x += dx
             b.y += dy
-            b.e -= 0.015 * b.m
+            b.e -= (0.0001 + 0.002 * b.m + 0.001 * b.e)
             b.age++
             let change = -1 
 
@@ -150,7 +163,7 @@ const DELAY = 45
         let newblobs = []
         blob.forEach(b => {
             if (b.e > 20) {
-                b.e = 10
+                b.e = 11
                 let mdiff = Math.random()
                 if (mdiff < 0.5) {
                     mdiff = 0
@@ -164,9 +177,10 @@ const DELAY = 45
                 {
                     x:b.x,
                     y:b.y,
-                    e:5,
+                    e:7,
                     d:b.d+Math.PI,
-                    m:b.m + mdiff
+                    m:Math.max(0.1, b.m + mdiff), //metabolism cannot be less than 0.1 or blobs would never die
+                    age: 0
                 })
                 blobsborn++
             }
@@ -176,7 +190,10 @@ const DELAY = 45
         })
     }
     async function hej() {
+        
         await sleep(DELAY)
+        if (paused) {return}
+        time++
         //console.clear()
         if (algae.length < 50) {
             let xstart = randInt(0, 99)
@@ -188,13 +205,16 @@ const DELAY = 45
         await eat()
         await cleanup()
         await breed()
-        await render()
+        //if (time % 500 == 0) {
+            await render()
+        //}
+        
         //console.log(JSON.stringify(blob))
     }
 
     async function start() {
         while(true) {
-            time++
+            
             await hej()
         }
     }
