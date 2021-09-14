@@ -40,7 +40,7 @@ let paused = false
             y: 30,
             e: 15, //energy
             d: 0, //direction (radi)
-            m: 0.7, //metabolism
+            m: 0.3, //metabolism
             age: 0
         }
     ]
@@ -126,7 +126,15 @@ let paused = false
             let dy = Math.sin(b.d) * b.m
             b.x += dx
             b.y += dy
-            b.e -= (0.0001 + 0.002 * b.m + 0.001 * b.e)
+            let upkeep = (0.0001 + 0.002 * b.m + 0.0003 * b.e)
+            
+            if (b.age > 2000) {
+                upkeep *= 2
+            }
+            if (b.age > 5000) {
+                upkeep *= 2
+            }
+            b.e -= upkeep
             b.age++
             let change = -1 
 
@@ -138,6 +146,7 @@ let paused = false
             if (change > 0) {
                 b.d = Math.random() * 2 * Math.PI
             }
+            
         })
     }
 
@@ -156,7 +165,7 @@ let paused = false
 
     async function cleanup() {
         algae = algae.filter(a => a[0] != -50)
-        blob = blob.filter(b => b.e > 1.5)
+        blob = blob.filter(b => b.e > 0.5)
     }
 
     async function breed() {
