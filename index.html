@@ -40,7 +40,7 @@ let paused = false
             y: 30,
             e: 15, //energy
             d: 0, //direction (radi)
-            m: 0.3, //metabolism
+            m: 0.2, //metabolism
             age: 0
         }
     ]
@@ -172,7 +172,7 @@ let paused = false
         let newblobs = []
         blob.forEach(b => {
             if (b.e > 20) {
-                b.e = 11
+                b.e = 10
                 let mdiff = Math.random()
                 if (mdiff < 0.5) {
                     mdiff = 0
@@ -186,7 +186,7 @@ let paused = false
                 {
                     x:b.x,
                     y:b.y,
-                    e:7,
+                    e:6,
                     d:b.d+Math.PI,
                     m:Math.max(0.1, b.m + mdiff), //metabolism cannot be less than 0.1 or blobs would never die
                     age: 0
